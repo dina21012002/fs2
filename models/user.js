@@ -1,36 +1,7 @@
-NEWSCHEMA('User', function(schema) {
-	schema.define('id'        , 'Number'                 );  	
-	schema.setResource('default'                        );      
-	schema.setDefault(function(property) {    
-		if (property === 'dt')         return new Date();   	
-  	}); 
-	schema.setGet(function ($) {		
-	});
-	schema.setSave(function ($) {		
-	});
-	schema.setRemove(function ($) {		
-	});
-	schema.addWorkflow('grid', function($) {		
-    });
-})
-
-NEWSCHEMA('User/Login', function(schema) {
-	schema.define('email',     'String(100)', true);
-	schema.define('pass',      'String(40)',  true);    
-	schema.define('autologin', Boolean, false);
-
-	schema.addWorkflow('exec', async function($) {
-	    	try {
-		   //
-                } catch (err) {
-		    LOGGER('error', 'Login', err);                 
-	            $.invalid('!auth');                    
-        	    return;
- 		} 
-        })
-})
+var Pr = MODULE('Promise');   
 
 NEWSCHEMA('User', function(schema) {
+	schema.define('id'        , 'Number'     );  
 	schema.define('id'        		, 'Number'     	  	          );  	
 	schema.define('first_name'      , 'String(50)',  true, 'cu' 	  );  	
 	schema.define('last_name'       , 'String(50)',  true, 'cu'    );  	
@@ -42,7 +13,7 @@ NEWSCHEMA('User', function(schema) {
 	schema.define('password'   	    , 'String(50)',   	   'c'	  );  	
 	schema.define('telegram_uid'    , 'String(50)',	  	   'cu'	  );  	
 	schema.define('created_at'      , 'Datetime'  ,	  	   'c'     );  	
-	schema.define('updated_at'      , 'Datetime'  ,	       'u'     );  	
+	schema.define('updated_at'      , 'Datetime'  ,	       'u'     );  	  	            	
 
 	schema.setResource('default');      
 
@@ -52,7 +23,7 @@ NEWSCHEMA('User', function(schema) {
 		if (property === 'updated_at')         return new Date();   	
   	}); 
 
-	schema.setGet(function ($) {		
+	schema.setGet(function ($) {	
 		var o = Object.assign({}, U.isEmpty($.query) ? $.options : $.query);									
 		var sql = DB(); 
 		sql.debug = true;         
@@ -72,7 +43,7 @@ NEWSCHEMA('User', function(schema) {
 			if (o.email) builder.where('email', o.email);
 			if (o.login) builder.where('!lower(login)', o.login);  
 			if (o.role) builder.in('role', o.role);	    	
-			if (o.pass) builder.where('pass', o.pass.md5());	    				
+			if (o.password) builder.where('password', o.password.md5());	    				
 			if (U.isArray(o.status)) builder.in('status', o.status);      		                  		
 	       		else if (typeof o.status == 'string') builder.in('status', (o.status == 'active') ? [1] : (o.status == 'all') ? [0,1] : [0]);                             	
 	        	else if (isNum(o.status)) builder.where('status', o.status);                               
@@ -135,24 +106,40 @@ NEWSCHEMA('User', function(schema) {
 			if (!resp) $.success(false, 'User not found');
 			return $.success(true);
 		}, 'user')	
-
 	});
 
 	schema.addWorkflow('grid', function($) {		
-    });
+        });
 })
 
 
- NEWSCHEMA('User/Login', function(schema) {
-	schema.define('autologin', Boolean, false);
+NEWSCHEMA('User/Login', function(schema) {
+	schema.define('login', 	       'String(40)',  true);
+	schema.define('password',      'String(50)',  true);    
+	schema.define('autologin', 	   'Boolean',    false);
 
 	schema.addWorkflow('exec', async function($) {
-	    try {
-		   //
-        } catch (err) {
-		    LOGGER('error', 'Login', err);                 
-	        $.invalid('!auth');                    
-        	return;
+	    	try {
+				var model = schema.clean($.model);
+				var user = await Pr.get('User', model);	
+	
+				if (!user) {            	
+					$.success(false, RESOURCE('!user_pass'));                
+					return; 
+				}		
+	
+				var opt = {};
+				opt.name = CONF.cookie;
+				opt.key = CONF.cookie_secret;
+				opt.id = user.id;
+				opt.expire = (model.autologin) ? '20 days' : '1 day';    
+				opt.data = user;  
+				MAIN.session.setcookie($, opt, $.done());            
+				AUDIT('users', $, 'login', user.id + ': ' + user.login);        
+                
+			} catch (err) {
+		    		LOGGER('error', 'Login', err);                 
+					return $.success(false, RESOURCE('!auth'));
  		} 
-    })
+        })
 })

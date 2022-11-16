@@ -12,6 +12,7 @@ function view_login() {
     self.view('page/login');
 }
 
+
 function logout() {
     var self = this;
     MAIN.session.remove(self.sessionid);
