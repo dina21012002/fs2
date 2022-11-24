@@ -17,16 +17,3 @@ function logout() {
     self.cookie(CONF.cookie, '', '-1 day')
     self.redirect('/');
 }
-
-function test_get(id) {
-    var self = this;
-    console.log(id);
-    console.log(self.query);
-    self.plain('Test get response');
-}
-
-function test_post() {
-    var self = this;
-    console.log(self.body);
-    self.json(SUCCESS(true, 'cool'));
-}

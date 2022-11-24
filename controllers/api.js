@@ -8,10 +8,10 @@ exports.install = function() {
 
     //proxy
     PROXY('/cdn/upload', MAIN.cdn.upload);
-    FILE('/cdn/image/', img_proxy ['.jpg', '.jpeg', '.png', '.gif']);
+    FILE('/cdn/image/', img_proxy,  ['.jpg', '.jpeg', '.png', '.gif']);
 }
 
-function img_proxy(req, res) {
+function img_proxy(req, res) {    
     res.proxy(CONF.cdn.host+'/'+req.path.slice(-2).join('/'), NOOP);
     return;
 }
