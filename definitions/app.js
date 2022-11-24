@@ -8,3 +8,6 @@ LOCALIZE('/forms/*.html', ['compress']);
 MODULE('Utilit').setConstant();
 //setting for company                                                                                                                                                                                                                          
 MODULE('Utilit').setCompany();    
+
+//выбрать cdn
+MODULE('Utilit').setCDN();

@@ -2,8 +2,6 @@ exports.install = function() {
     ROUTE('+GET /*'                         );
     ROUTE('GET /login',           view_login);   
     ROUTE('GET /logout'          , logout   );
-    ROUTE('GET /api/test/{id}'   , test_get );
-    ROUTE('POST /api/test'       , test_post);
 }
 
 function view_login() {
