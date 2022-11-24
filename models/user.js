@@ -42,25 +42,26 @@ NEWSCHEMA('User', function(schema) {
 			if (o.id) builder.in('id', o.id);   
 			if (o.email) builder.where('email', o.email);
 			if (o.login) builder.where('!lower(login)', o.login);  
-			if (o.role) builder.in('role', o.role);	    	
-			if (o.password) builder.where('password', o.password.md5());	    				
+			if (o.password) builder.where('password', o.password.md5());
+			if (o.role) builder.in('role', o.role);	    				
 			if (U.isArray(o.status)) builder.in('status', o.status);      		                  		
 	       		else if (typeof o.status == 'string') builder.in('status', (o.status == 'active') ? [1] : (o.status == 'all') ? [0,1] : [0]);                             	
 	        	else if (isNum(o.status)) builder.where('status', o.status);                               
 	        	else builder.where('status', 1); 
 	       	builder.first();		
 		})	
-
 		sql.exec(function(err, resp) {                      
 			if (err) {        
                 LOGGER('error', 'User/get', err);          
                 return $.success(false);	        
             }    
-            //if (!resp) $.success(false);
-            //return $.success(true, resp);
-            return $.callback(resp||null);
-		}, 'user')	
-	});
+					//return
+			$callback(resp||nill);
+						if(!resp) $.success(false);
+						return $success(true,resp);
+							}, 'user')
+						});
+           
 
 	schema.setSave(function ($) {	
 		var model = schema.clean($.model); 

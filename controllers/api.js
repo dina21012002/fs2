@@ -1,11 +1,21 @@
 exports.install = function() {
     //user
     ROUTE('POST /api/user/login', ['*user/Login-->@exec']);
-    ROUTE('GET /api/user', ['*User-->@get']);
-    ROUTE('POST /api/user', ['*User-->@save']);
-    ROUTE('GET /api/user', ['*User-->@grid']);
-    ROUTE('DELETE /api/user', ['*User-->@remove']);
+    ROUTE('GET /api/user', ['*User-->@get']              );
+    ROUTE('POST /api/user', ['*User-->@save']            );
+    ROUTE('GET /api/user', ['*User-->@grid']             );
+    ROUTE('DELETE /api/user', ['*User-->@remove']        );
 
+    //product
+    ROUTE('POST /api/product', ['*Product-->@save']      );
+    ROUTE('GET /api/product', ['*Product-->@get']        );
+    ROUTE('GET /api/product/grid', ['*Product-->@grid']  );
+
+    //prodect category
+    ROUTE('POST /api/ptoduct/category', ['*Product/Category-->@save']      );
+    ROUTE('GET /api/ptoduct/category', ['*Product/Category-->@get']        );
+    ROUTE('GET /api/ptoduct/category/query', ['*Product/Category-->@query']);
+   
     //proxy
     PROXY('/cdn/upload', MAIN.cdn.upload);
     FILE('/cdn/image/', img_proxy,  ['.jpg', '.jpeg', '.png', '.gif']);
