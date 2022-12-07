@@ -1,24 +1,24 @@
 var Pr = MODULE('Promise');   
 
 NEWSCHEMA('User', function(schema) {
-	schema.define('id'        , 'Number'     );  
-	schema.define('id'        		, 'Number'     	  	          );  	
-	schema.define('first_name'      , 'String(50)',  true, 'cu' 	  );  	
-	schema.define('last_name'       , 'String(50)',  true, 'cu'    );  	
-	schema.define('role'   		    , 'Number'    ,	  	   'c'     );  	
-	schema.define('status'   	    , 'Number'    ,	  	   'c'     );  	
-	schema.define('email'   	    , 'String(50)',   	   'cu'    );  	
-	schema.define('phone'   	    , 'String(20)',   	   'cu'    );  	
+	schema.define('id'        		, 'Number'   				  );   	
+	schema.define('first_name'      , 'String(50)',  true, 'cu'   );  	
+	schema.define('last_name'       , 'String(50)',  true, 'cu'   );  	
+	schema.define('role'   		    , 'Number'    ,	  	   'c'    );  	
+	schema.define('status'   	    , 'Number'    ,	  	   'c'    );  	
+	schema.define('email'   	    , 'String(50)',   	   'cu'   );  	
+	schema.define('phone'   	    , 'String(20)',   	   'cu'   );  	
 	schema.define('login'   	    , 'String(20)',   	   'c'	  );  	
 	schema.define('password'   	    , 'String(50)',   	   'c'	  );  	
 	schema.define('telegram_uid'    , 'String(50)',	  	   'cu'	  );  	
-	schema.define('created_at'      , 'Datetime'  ,	  	   'c'     );  	
-	schema.define('updated_at'      , 'Datetime'  ,	       'u'     );  	  	            	
+	schema.define('created_at'      , 'Datetime'  ,	  	   'c'    );  	
+	schema.define('updated_at'      , 'Datetime'  ,	       'u'    );  	  	            	
 
 	schema.setResource('default');      
 
 	schema.setDefault(function(property) {    		
 		if (property === 'status')      	   return 1;   	
+		if (property === 'telegram_uid') 	   return null;
 		if (property === 'created_at')         return new Date();   	
 		if (property === 'updated_at')         return new Date();   	
   	}); 
@@ -110,6 +110,40 @@ NEWSCHEMA('User', function(schema) {
 	});
 
 	schema.addWorkflow('grid', function($) {		
+		var o = $.query||{};
+		o.page = o.page||1;
+        o.limit = o.limit||30;
+
+		var sql = DB(); 
+		sql.debug = true;         
+		sql.listing('user', 'user').make(function(builder) {                        
+            if (o.sort) builder.sort(o.sort, (o.order=='asc') ? false : true);
+                else builder.sort('created_at', true);
+            if (o.search) {
+                builder.scope(function() { 
+					builder.like('fisrt_name', o.search, '*');  
+                	builder.or();
+                	builder.like('last_name', o.search, '*');  
+                	builder.or();                 
+                    builder.like('login', o.search, '*');         
+                    builder.or();
+                    builder.like('email', o.search, '*');                                 
+                });                 
+            };            
+            if (isNum(o.status)) {
+            	builder.where('status', o.status);                         
+            } else builder.where('status', '>', -1);                         
+            builder.page(o.page, o.limit);
+        }); 
+
+        sql.exec(function(err, resp) {
+			if (err) {
+				LOGGER('error', 'User/grid', err);
+				$.callback([]);
+			}
+			$.callback({'total': resp.count, 'rows': resp.items});
+		}, 'user');	
+
         });
 })
 
