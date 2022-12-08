@@ -55,12 +55,11 @@ NEWSCHEMA('User', function(schema) {
                 LOGGER('error', 'User/get', err);          
                 return $.success(false);	        
             }    
-					//return
-			$callback(resp||nill);
-						if(!resp) $.success(false);
-						return $success(true,resp);
-							}, 'user')
-						});
+				//return				
+				if(!resp) $.success(false);
+				return $.success(true,resp);
+		}, 'user');
+	});
            
 
 	schema.setSave(function ($) {	
