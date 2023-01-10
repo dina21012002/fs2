@@ -11,6 +11,7 @@
   "dependencies": {
     "mqtt": "^4.3.7",
     "mysql2": "^2.3.3",
+    "node.js": "^0.0.1-security",
     "sqlagent": "^12.1.1",
     "total.js": "^3.4.13"
   }

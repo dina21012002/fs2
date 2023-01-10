@@ -4,7 +4,7 @@ NEWSCHEMA('User', function(schema) {
 	schema.define('id'        		, 'Number'   				  );   	
 	schema.define('first_name'      , 'String(50)',  true, 'cu'   );  	
 	schema.define('last_name'       , 'String(50)',  true, 'cu'   );  	
-	schema.define('role'   		    , 'Number'    ,	  	   'c'    );  	
+	schema.define('role'   		    , 'Number'    ,	  	   'cu'   );  	
 	schema.define('status'   	    , 'Number'    ,	  	   'c'    );  	
 	schema.define('email'   	    , 'String(50)',   	   'cu'   );  	
 	schema.define('phone'   	    , 'String(20)',   	   'cu'   );  	

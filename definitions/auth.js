@@ -23,7 +23,6 @@
         //console.log(meta);	
         //$.success({id:1, first_name: 'Pechenegov', last_name: 'Ivan', login: 'ivan.p', role: 2});
          if (user) {	
-          
              $.roles(roles[user.role]);			
              $.success(user);
          } else $.invalid();

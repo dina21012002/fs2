@@ -6,9 +6,9 @@ LOCALIZE('/forms/*.html', ['compress']);
 
 //setting const
 MODULE('Utilit').setConstant();
-//setting for company                                                                                                                                                                                                                          
-MODULE('Utilit').setCompany();    
+//setting for company
+MODULE('Utilit').setCompany();  
 //выбрать cdn
 MODULE('Utilit').setCDN();
-//активируем MQTT
+//активировать MQTT
 MODULE('MQTT').init();
